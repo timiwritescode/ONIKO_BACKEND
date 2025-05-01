@@ -1,23 +1,21 @@
 import { config } from "dotenv";
-import express from "express";
-import morgan from "morgan";
+import express, {Express} from "express";
+
 import helmet from "helmet";
 import cors from "cors";
-
 import api from "../api/index.api"
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import notfoundMiddleware from "../middleware/notFound.middleware";
 import errorHandlerMiddleware from "../middleware/errorHandler.middleware";
 import { corsOptions } from "../config/corsOptions";
-import ExpressMongoSanitize from "express-mongo-sanitize"
+import { bootstrap } from "./bootstrap";
 
 
 config();
 
 
-export const bootstrapExpress = (app: any) => {
-    app.use(ExpressMongoSanitize());
+export const bootstrapExpress = (app) => {
     app.use(helmet());
     app.use(cors(corsOptions));
     app.use(express.json());
@@ -25,6 +23,8 @@ export const bootstrapExpress = (app: any) => {
     extended: true, limit: "30mb"
     }));
     app.use(cookieParser());
+      
+  
 
     // routes
     app.use("/api", api)
@@ -33,4 +33,6 @@ export const bootstrapExpress = (app: any) => {
     // error handlers
     app.use(notfoundMiddleware);
     app.use(errorHandlerMiddleware);
+
+    return app;
 }

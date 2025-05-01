@@ -1,14 +1,11 @@
 import express from "express";
 
-const api = express.Router();
+import authRouter from "./auth/index";
 
-api.get("/", (req, res) => {
-    console.log("Works in here")
-    throw Error("There is a problem");
-    
-    res.json({
-        message: "Welcome to Oniko Learning platform"
-    });
-});
 
-export default api;
+const router = express.Router()
+
+router.use(authRouter)
+
+export default router;
+

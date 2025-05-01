@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import BaseException from "../exceptions/base.exception";
+import { logger } from "../config/logger";
 
 
 const errorHandlerMiddleware = (err: any, req: Request, res: Response, next: NextFunction): void => {
@@ -7,8 +8,9 @@ const errorHandlerMiddleware = (err: any, req: Request, res: Response, next: Nex
         stausCode: err.statusCode || 500,
         msg: err.message || "Something went wrong, try again later"
     };
-
+    
     if (err instanceof BaseException) {
+
                 res
                 .status(defaultError.stausCode)
                 .json({message: defaultError.msg, success: false})
@@ -20,6 +22,7 @@ const errorHandlerMiddleware = (err: any, req: Request, res: Response, next: Nex
         defaultError.msg = Object.values(err.errors)
                             .map((item: {message: string}) => item?.message)
                             .join(",");
+
     }
 
 
@@ -36,6 +39,7 @@ const errorHandlerMiddleware = (err: any, req: Request, res: Response, next: Nex
     res
         .status(defaultError.stausCode)
         .json({ message: defaultError.msg, succes: false})
+    next();
 };
 
 

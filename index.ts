@@ -4,6 +4,7 @@ import { logger } from "./src/config/logger";
 import { bootstrap } from "./src/loader/bootstrap";
 import { validateEnv } from "./src/config/env.config";
 import mongoose from "mongoose";
+import { createApp } from "./src/loader/app";
 
 
 const exitHandler = (server: Server | null) => {
@@ -27,8 +28,11 @@ const unExpectedErrorHandler = (server: Server) => {
 
 
 const startServer =  async () => {
-    const app: Express = express();
+    
+    const app = express();
+    
     await bootstrap(app);
+    
 
     const httpServer = createServer(app);
     const port = validateEnv().port
