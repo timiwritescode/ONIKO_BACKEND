@@ -6,12 +6,11 @@
       "moduleResolution": "node",
       "sourceMap": true,
       "outDir": "dist",
-      "rootDir": "./src",
       "allowJs": true,
       "types": ["jest"]
 
   
     },
-    "include": ["src/**/*.ts", "**/*.test.ts"],
+    "include": ["src/**/*.ts", "**/*.test.ts", "index.ts"],
     "lib": ["es2015"]
   }
