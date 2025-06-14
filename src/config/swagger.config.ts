@@ -10,7 +10,7 @@ const swaggerDefinition: SwaggerDefinition = {
     },
     servers: [
         {
-            url: `http://localhost:${ENV.PORT}/`,
+            url: `${ENV.APP_DOMAIN}/`,
             description: "Local Server"
         }
     ],
