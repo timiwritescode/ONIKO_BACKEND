@@ -110,9 +110,9 @@ router.post("/sign-in", validate(SignInSchema), async (req: Request, res: Respon
   res.status(200).json(response);
 });
 
-router.post("/forgot-password")
+router.post("/forgot-password", async (req: Request, res: Response) => {})
 
-router.post("/reset-password")
+router.post("/reset-password", async (req: Request, res: Response) => {})
 
 export default router;
 
