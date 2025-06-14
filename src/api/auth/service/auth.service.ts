@@ -15,6 +15,8 @@ export async function signUpUser(dto: SignUpDto): Promise<SignUpResponseDto> {
     try {
         dto.password = await hashPassword(dto.password);
         const user = await createUser(dto);
+        
+        // dispatch event to 
 
         return new SignUpResponseDto(user.user_id)
             

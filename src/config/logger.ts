@@ -1,10 +1,10 @@
 import winston from "winston";
-import { validateEnv } from "./env.config";
+import { ENV } from "./env.config";
 
 const { format, createLogger, transports} = winston;
 const { printf, combine, timestamp, colorize, uncolorize} =  format;
 
-const nodeEnv = validateEnv()?.env
+const nodeEnv = ENV.NODE_ENV
 
 const winstonFormat = printf(( {level, message, timestamp, stack}) => {
     return `${timestamp}: ${level}: ${stack || message}`;

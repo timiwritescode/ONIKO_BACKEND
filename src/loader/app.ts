@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import express, {Express} from "express";
+import express, {Express, Request, Response} from "express";
 
 import helmet from "helmet";
 import cors from "cors";
@@ -9,13 +9,15 @@ import cookieParser from "cookie-parser";
 import notfoundMiddleware from "../middleware/notFound.middleware";
 import errorHandlerMiddleware from "../middleware/errorHandler.middleware";
 import { corsOptions } from "../config/corsOptions";
-import { bootstrap } from "./bootstrap";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "../config/swagger.config"
+import { ENV } from "../config/env.config";
 
 
 config();
 
 
-export const bootstrapExpress = (app) => {
+export const bootstrapExpress = (app: Express) => {
     app.use(helmet());
     app.use(cors(corsOptions));
     app.use(express.json());
@@ -24,11 +26,19 @@ export const bootstrapExpress = (app) => {
     }));
     app.use(cookieParser());
       
-  
+    
+    app.get("/healthcheck", (req: Request, res: Response) => {
+        res.status(200).send("Server healthy!")
+    })
 
     // routes
-    app.use("/api", api)
+    app.use("/api/v1", api)
 
+
+    // init swagger 
+    if (ENV.NODE_ENV == "development" || ENV.NODE_ENV == "staging") {
+            app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+    }
 
     // error handlers
     app.use(notfoundMiddleware);

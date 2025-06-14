@@ -1,10 +1,10 @@
+import { ENV } from "./src/config/env.config";
 import express, { Express } from "express";
 import { createServer, Server } from "http";
 import { logger } from "./src/config/logger";
 import { bootstrap } from "./src/loader/bootstrap";
-import { validateEnv } from "./src/config/env.config";
 import mongoose from "mongoose";
-import { createApp } from "./src/loader/app";
+
 
 
 const exitHandler = (server: Server | null) => {
@@ -27,7 +27,7 @@ const unExpectedErrorHandler = (server: Server) => {
 };
 
 
-const startServer =  async () => {
+const startServer =  async () => { 
     
     const app = express();
     
@@ -35,10 +35,11 @@ const startServer =  async () => {
     
 
     const httpServer = createServer(app);
-    const port = validateEnv().port
+    const port = ENV.PORT
+    
 
     const server: Server = httpServer.listen(port, () => {
-        logger.info(`Server listening on port ${port}`);
+        logger.info(`Server started on http://localhost:${port}`);
     });
 
     process.on('uncaughtException', unExpectedErrorHandler(server));
