@@ -51,7 +51,7 @@ export async function signInUser(dto: SignInDto): Promise<SignInResponseDto>{
         return new SignInResponseDto(accesToken);
     } catch (error) {
         if (error instanceof BaseException) {
-            throw error;
+            throw error; 
         }
 
         logger.error("Sigin in user error: " + error.message)
