@@ -11,7 +11,6 @@ const userSchema = new Schema<IUser>({
 
     passwordHash: {
         type: String,
-        minlength: [8, "Password should have a minimum of 8 characters"],
         required: [true, "Password is required"]
     },
 
@@ -27,14 +26,9 @@ const userSchema = new Schema<IUser>({
         }
     },
 
-    name: {
-        type: String,
-        required: [true, 'Name is required']
-    },
+    username: { type: String, required: [true, 'username is required']},
 
-    profile: {
-        type: Schema.Types.ObjectId, ref: "Profile", unique: true
-    },
+    profile: { type: Schema.Types.ObjectId, ref: "Profile", unique: true },
 
     languages: [{type: Schema.Types.ObjectId, ref: "languages"}]
 

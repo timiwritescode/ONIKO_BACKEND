@@ -10,15 +10,21 @@ import { SignInResponseDto } from "../dto/signInResponse.dto";
 import { generateAccessToken } from "../../../utils/util";
 import { JwtPayload } from "../../../interface/jwtPayload.interface";
 import { logger } from "../../../config/logger";
+import { GeneralResponse } from "../../../dto/general-response.dto";
 
-export async function signUpUser(dto: SignUpDto): Promise<SignUpResponseDto> {
+export async function signUpUser(dto: SignUpDto): Promise<GeneralResponse> {
     try {
-        dto.password = await hashPassword(dto.password);
+        // dto.password = await hashPassword(dto.password);
+        dto["passwordHash"] = await hashPassword(dto.password);
         const user = await createUser(dto);
         
         // dispatch event to 
+        
 
-        return new SignUpResponseDto(user.user_id)
+        return new GeneralResponse(
+            true, 
+            "User registered successfully", 
+            new SignUpResponseDto(user.user_id))
             
     } catch (error) {
         if (error instanceof BaseException) {
@@ -40,7 +46,7 @@ export async function signInUser(dto: SignInDto): Promise<SignInResponseDto>{
             throw new UnauthorizedException("Invalid Login Credentials");
         }
         
-        if (!(await isPasswordMatch(dto.password, user.password))) {
+        if (!(await isPasswordMatch(dto.password, user.passwordHash))) {
             throw new UnauthorizedException("Invalid login credentials")
         }
         const payload: JwtPayload = {
@@ -48,7 +54,7 @@ export async function signInUser(dto: SignInDto): Promise<SignInResponseDto>{
         }
         const accesToken = generateAccessToken(payload);
 
-        return new SignInResponseDto(accesToken);
+        return new SignInResponseDto(accesToken)
     } catch (error) {
         if (error instanceof BaseException) {
             throw error; 

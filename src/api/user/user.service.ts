@@ -1,22 +1,49 @@
+import mongoose, { Types } from "mongoose";
 import ConflictException from "../../exceptions/conflict.exception";
-import NotFoundException from "../../exceptions/notFound.exception";
 import { IUser } from "../../interface/user.interface";
-import userModel from "./model/user.model";
+import profileModel from "../../models/profile.model";
+import userModel from "../../models/user.model";
 
-export async function createUser(user: Partial<IUser>): Promise<Partial<IUser>> {
+
+export async function createUser(userDto: Partial<IUser>): Promise<Partial<IUser>> {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
-        const result = await userModel.create(user);
+        const [user] = await userModel.create([userDto], { session });
+        const [profile] = await profileModel.create([{user: user._id}], { session });
         
-        return result
+        user.profile = profile._id as Types.ObjectId;
+        await user.save({ session });
 
+        await session.commitTransaction();
+        return user;
+        
     } catch (err) {
         if (err.code === 11000 ) {
-            throw new ConflictException("User already exists")
+            console.error(err.message)
+            throw new ConflictException("User already exist")
         }
+        await session.abortTransaction();
+        throw err;
     
+    } finally {
+        session.endSession();
+    }
+} 
+
+export async function createUserProfile(user: Partial<IUser>) {
+    try {
+        console.log("here")
+        const profile = await profileModel.create({
+            user: user._id
+        })
+
+        user.profile = profile._id as Types.ObjectId
+        await user.save()
+    } catch(err) {
+        throw err
     }
 }
-
 
 export async function getUserByEmail(email: string): Promise<Partial<IUser>> {
         const user = await userModel.findOne({
@@ -26,3 +53,6 @@ export async function getUserByEmail(email: string): Promise<Partial<IUser>> {
         return user
 
 }
+
+
+// export const function createUserProfile()

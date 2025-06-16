@@ -13,7 +13,7 @@ const errorHandlerMiddleware = (err: any, req: Request, res: Response, next: Nex
 
                 res
                 .status(defaultError.stausCode)
-                .json({message: defaultError.msg, success: false})
+                .json({status_code: defaultError.stausCode, message: defaultError.msg, success: false})
                 return;
     }
 
@@ -23,7 +23,7 @@ const errorHandlerMiddleware = (err: any, req: Request, res: Response, next: Nex
                             .map((item: {message: string}) => item?.message)
                             .join(",");
 
-    }
+    } 
 
 
     if (err.name = "CastError") {
