@@ -6,40 +6,46 @@ import * as authService from "../service/auth.service"
 import { bootstrapExpress } from "../../../loader/app";
 import { SignUpResponseDto } from "../dto/signUpResponse.dto";
 import { SignInResponseDto } from "../dto/signInResponse.dto";
+import { GeneralResponse } from "../../../dto/general-response.dto";
+import { USER_CREATED_MESSAGE } from "../util/messages.util";
 
 
 
 let app = express()
 bootstrapExpress(app);
 
-describe("POST /api/auth/sign-up", () => {
+describe("POST /api/v1/auth/sign-up", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
     it("should return user created", async() => {
-        const mockResponse = new SignUpResponseDto("user_id")
+        const mockResponse = new GeneralResponse(
+            true, 
+            USER_CREATED_MESSAGE,
+            new SignUpResponseDto("user_id")
+        ) 
         
         const user = {
-            name: "Oniaska",
+            username: "Oniaska",
             email: "onwaiska@examplemail.com",
-            password: "password",
+            password: "password123",
         };
 
         (authService.signUpUser as jest.Mock).mockResolvedValue(mockResponse)
         
         const response = await request(app)
-                                .post("/api/auth/sign-up")
+                                .post("/api/v1/auth/sign-up")
                                 .send(user)
                                 .expect(201);
         
-        expect(response.body.user_id).toBe("user_id");
+        expect(response.body.data.user_id).toBe("user_id");
         expect(authService.signUpUser).toHaveBeenCalledWith(user);
     })
 })
 
 
-describe ("POST /api/auth/sign-up", () => {
+describe ("POST /api/v1/auth/sign-up", () => {
     it ("should respond with validation error when fields violates schema", async () => {
         const invalidUser = {
             name: "",
@@ -48,7 +54,7 @@ describe ("POST /api/auth/sign-up", () => {
         };
 
         const response = await request(app)
-                                .post("/api/auth/sign-up")
+                                .post("/api/v1/auth/sign-up")
                                 .send(invalidUser);
 
 
@@ -59,7 +65,7 @@ describe ("POST /api/auth/sign-up", () => {
 })
 
 
-describe ("POST /api/auth/sign-in", () => {
+describe ("POST /api/v1/auth/sign-in", () => {
     it("should respond with access token", async () => {
         const mockAccessToken = "mocked.jwt.token";
 
@@ -69,7 +75,7 @@ describe ("POST /api/auth/sign-in", () => {
 
         
         const newUser = {
-            name: "mock_user",
+            username: "mock_user",
             email: "mock@email.com",
             password: "password"
         };
@@ -83,7 +89,7 @@ describe ("POST /api/auth/sign-in", () => {
         (authService.signInUser as jest.Mock).mockResolvedValue(mockSignInResponse);
 
         const signUpResponse = await request(app)
-                                        .post("/api/auth/sign-up")
+                                        .post("/api/v1/auth/sign-up")
                                         .send(newUser);
 
         expect(signUpResponse.status).toBe(201);
@@ -91,7 +97,7 @@ describe ("POST /api/auth/sign-in", () => {
 
 
         const signInResponse = await request(app)
-                                        .post("/api/auth/sign-in")
+                                        .post("/api/v1/auth/sign-in")
                                         .send(loginCreds);
         const body = signInResponse.body;
 

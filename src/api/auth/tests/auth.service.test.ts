@@ -6,6 +6,8 @@ import { SignInDto } from "../dto/signIn.dto";
 import { SignInResponseDto } from "../dto/signInResponse.dto";
 import { SignUpDto } from "../dto/signUp.dto";
 import { SignUpResponseDto } from "../dto/signUpResponse.dto";
+import { GeneralResponse } from "../../../dto/general-response.dto";
+import { USER_CREATED_MESSAGE } from "../util/messages.util";
 
 
 
@@ -17,19 +19,19 @@ jest.mock("../../../utils/util");
 describe("signUpUser", () => {
   it("should hash password and create user", async () => {
     const dto: SignUpDto = {
-      name: "Test User",
+      username: "Test User",
       email: "test@example.com",
       password: "plaintext",
     };
 
-    (utils.hashPassword as jest.Mock).mockResolvedValue("hashed");
+    (utils.hashPassword as jest.Mock).mockResolvedValue("plaintext");
     (userService.createUser as jest.Mock).mockResolvedValue({ user_id: "123" });
 
     const result = await authService.signUpUser(dto);
-
+    const responseDto = new GeneralResponse(true, USER_CREATED_MESSAGE, new SignUpResponseDto("123"))
     expect(utils.hashPassword).toHaveBeenCalledWith("plaintext");
-    expect(userService.createUser).toHaveBeenCalledWith({ ...dto, password: "hashed" });
-    expect(result).toEqual(new SignUpResponseDto("123"));
+    expect(userService.createUser).toHaveBeenCalledWith({ ...dto});
+    expect(result).toEqual(responseDto);
   });
 });
 
@@ -44,7 +46,7 @@ describe("signInUser", () => {
 
     const mockUser = {
       user_id: "abc123",
-      password: "hashed",
+      passwordHash: "hashed",
     };
 
     (userService.getUserByEmail as jest.Mock).mockResolvedValue(mockUser);

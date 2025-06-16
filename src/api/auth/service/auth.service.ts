@@ -11,6 +11,7 @@ import { generateAccessToken } from "../../../utils/util";
 import { JwtPayload } from "../../../interface/jwtPayload.interface";
 import { logger } from "../../../config/logger";
 import { GeneralResponse } from "../../../dto/general-response.dto";
+import { USER_CREATED_MESSAGE } from "../util/messages.util";
 
 export async function signUpUser(dto: SignUpDto): Promise<GeneralResponse> {
     try {
@@ -23,7 +24,7 @@ export async function signUpUser(dto: SignUpDto): Promise<GeneralResponse> {
 
         return new GeneralResponse(
             true, 
-            "User registered successfully", 
+            USER_CREATED_MESSAGE, 
             new SignUpResponseDto(user.user_id))
             
     } catch (error) {
