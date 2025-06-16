@@ -9,7 +9,7 @@ const userSchema = new Schema<IUser>({
         unique: true,
     },
 
-    password: {
+    passwordHash: {
         type: String,
         minlength: [8, "Password should have a minimum of 8 characters"],
         required: [true, "Password is required"]
@@ -30,8 +30,15 @@ const userSchema = new Schema<IUser>({
     name: {
         type: String,
         required: [true, 'Name is required']
-    }
+    },
+
+    profile: {
+        type: Schema.Types.ObjectId, ref: "Profile", unique: true
+    },
+
+    languages: [{type: Schema.Types.ObjectId, ref: "languages"}]
+
 })
 
 
-export default model<IUser>('USer', userSchema);
+export default model<IUser>('User', userSchema);

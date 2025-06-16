@@ -1,9 +1,12 @@
-import { Document, Schema } from "mongoose";
+import { Document, Schema, Types } from "mongoose";
+import { IProfile } from "./profile.interface";
 
 
 export interface IUser extends Document {
     user_id: string,
     email: string;
     name: string;
-    password: string;
+    passwordHash: string;
+    profile?: Types.ObjectId;
+    languages: Types.ObjectId[];
 }
