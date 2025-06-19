@@ -27,8 +27,16 @@ const errorHandlerMiddleware = (err: any, req: Request, res: Response, next: Nex
 
 
     if (err.name = "CastError") {
-        defaultError.stausCode = 400;
-        defaultError.msg = "Resource not found. Invalid: " + err.path
+        
+        if (err.message == ("not found")) {
+                    defaultError.stausCode = 400;
+            defaultError.msg = "Resource not found. Invalid: " + req.path
+        } else {
+            defaultError.stausCode = 500;
+            defaultError.msg = "An error occured"
+            logger.error(err.message)
+        }
+
     }
 
     if (err.code && err.code === 11000) {

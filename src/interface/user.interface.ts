@@ -7,6 +7,6 @@ export interface IUser extends Document {
     email: string;
     username: string;
     passwordHash: string;
-    profile?: Types.ObjectId;
+    profile?: Types.ObjectId | IProfile;
     languages: Types.ObjectId[];
 }

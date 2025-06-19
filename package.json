@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "nodemon --legacy-watch index.ts",
-    "start:prod": "tsc & node dist/index.js",  
+    "start:prod": "tsc & node dist/index.js",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
     "test": "jest"
@@ -50,6 +50,7 @@
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.3",
+    "@types/supertest": "^6.0.3",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "eslint": "^9.25.1",

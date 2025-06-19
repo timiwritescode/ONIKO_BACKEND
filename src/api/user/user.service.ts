@@ -3,6 +3,12 @@ import ConflictException from "../../exceptions/conflict.exception";
 import { IUser } from "../../interface/user.interface";
 import profileModel from "../../models/profile.model";
 import userModel from "../../models/user.model";
+import NotFoundException from "../../exceptions/notFound.exception";
+import BaseException from "../../exceptions/base.exception";
+import { logger } from "../../config/logger";
+import InternalServerErrorException from "../../exceptions/internalServerError.exception";
+import { GeneralResponse } from "../../dto/general-response.dto";
+import { ProfileResponseDto } from "./dto/profile.dto";
 
 
 export async function createUser(userDto: Partial<IUser>): Promise<Partial<IUser>> {
@@ -31,19 +37,7 @@ export async function createUser(userDto: Partial<IUser>): Promise<Partial<IUser
     }
 } 
 
-export async function createUserProfile(user: Partial<IUser>) {
-    try {
-        console.log("here")
-        const profile = await profileModel.create({
-            user: user._id
-        })
 
-        user.profile = profile._id as Types.ObjectId
-        await user.save()
-    } catch(err) {
-        throw err
-    }
-}
 
 export async function getUserByEmail(email: string): Promise<Partial<IUser>> {
         const user = await userModel.findOne({
@@ -54,5 +48,29 @@ export async function getUserByEmail(email: string): Promise<Partial<IUser>> {
 
 }
 
+
+export async function getUserProfile(userId: string): Promise<GeneralResponse> {
+    try {
+        const user = await userModel.findOne({user_id: userId}).populate("profile");
+
+        if (!user) {
+            throw new NotFoundException("User not found")
+        }
+        
+        return new GeneralResponse(
+            true,
+            "Profile retrieved successfully",
+            new ProfileResponseDto(user)
+        )
+
+    } catch (error) {
+        if (error instanceof BaseException) {
+            throw error
+        }
+
+        logger.error(error.message);
+        throw new InternalServerErrorException("An error occured")
+    }   
+}
 
 // export const function createUserProfile()

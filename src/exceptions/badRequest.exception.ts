@@ -1,5 +1,5 @@
 
-import { BAD_REQUEST } from "../constants/errorStatusCodes.constant";
+import { STATUS_BAD_REQUEST } from "../constants/errorStatusCodes.constant";
 import BaseException, { ErrorCode } from "./base.exception";
 
 
@@ -9,7 +9,7 @@ class BadRequestEsxception extends BaseException {
         super(
             message, 
             ErrorCode.BAD_REQUEST, 
-            BAD_REQUEST)
+            STATUS_BAD_REQUEST)
     }
 }
 

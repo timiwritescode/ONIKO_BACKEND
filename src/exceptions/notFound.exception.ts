@@ -1,4 +1,4 @@
-import { NOT_FOUND } from "../constants/errorStatusCodes.constant";
+import { STATUS_NOT_FOUND } from "../constants/errorStatusCodes.constant";
 import BaseException, { ErrorCode } from "./base.exception";
 
 class NotFoundException extends BaseException {
@@ -6,7 +6,7 @@ class NotFoundException extends BaseException {
         super(
             message,
             ErrorCode.NOT_FOUND,
-            NOT_FOUND
+            STATUS_NOT_FOUND
         )
     }
 }

@@ -42,6 +42,8 @@ describe("POST /api/v1/auth/sign-up", () => {
         expect(response.body.data.user_id).toBe("user_id");
         expect(authService.signUpUser).toHaveBeenCalledWith(user);
     })
+
+    
 })
 
 
