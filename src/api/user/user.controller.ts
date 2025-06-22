@@ -8,7 +8,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/users/profile:
+ * /api/v1/user/profile:
  *   get:
  *     summary: Get user profile
  *     description: Returns the user and their associated profile data.
@@ -34,4 +34,8 @@ router.get("/profile", verifyToken, async (req: Request, res: Response) => {
     res.status(200).json(response);
 })
 
+
+router.get("/languages", verifyToken, async(req: Request, res: Response) => {
+    
+})
 export default router;

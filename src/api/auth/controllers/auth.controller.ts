@@ -1,8 +1,10 @@
 import express, { NextFunction, Request, Response } from "express";
 import { validate } from "../../../validation/validate";
 import { SignUpSchema } from "../dto/signUp.dto";
-import { signInUser, signUpUser } from "../service/auth.service";
+import { forgotPassword, resetPassword, signInUser, signUpUser } from "../service/auth.service";
 import { SignInSchema } from "../dto/signIn.dto";
+import { ForgotPasswordSchema } from "../dto/forgotPassword.dto";
+import { ResetPasswordSchema } from "../dto/reset-password.dto";
 
 const router = express.Router();
 
@@ -110,9 +112,110 @@ router.post("/sign-in", validate(SignInSchema), async (req: Request, res: Respon
   res.status(200).json(response);
 });
 
-router.post("/forgot-password", async (req: Request, res: Response) => {})
 
-router.post("/reset-password", async (req: Request, res: Response) => {})
+/**
+ * @swagger
+ * /api/v1/auth/forgot-password:
+ *   post:
+ *     summary: Request password reset
+ *     description: Sends a password reset link to the user's email address.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *                 description: The email address associated with the user account.
+ *     responses:
+ *       200:
+ *         description: Password reset link sent successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: OTP sent to your mail.
+ *       400:
+ *         description: Validation error (e.g., invalid or missing email).
+ *       404:
+ *         description: User with the provided email was not found.
+ */
+router.post("/forgot-password", validate(ForgotPasswordSchema),async (req: Request, res: Response) => {
+  const response =  await forgotPassword(req.body);
+  res.status(201).json(response);
+})
+
+
+/**
+ * @swagger
+ * /api/v1/auth/reset-password:
+ *   post:
+ *     summary: Reset a user's password
+ *     description: Verifies a reset token and allows the user to reset their password.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - token
+ *               - new_password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *                 description: Email address used to request password reset
+ *               token:
+ *                 type: integer
+ *                 example: 123456
+ *                 description: 6-digit numeric reset token sent to the user's email
+ *               new_password:
+ *                 type: string
+ *                 example: newPassword123
+ *                 description: New user password
+ *     responses:
+ *       200:
+ *         description: Password reset successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Password reset successful
+ *       400:
+ *         description: Validation error or invalid token
+ *       404:
+ *         description: User not found
+ */
+
+router.post("/reset-password", validate(ResetPasswordSchema), async (req: Request, res: Response) => {
+  const response = await resetPassword(req.body)
+  res.status(201).json(response);
+})
 
 export default router;
 
