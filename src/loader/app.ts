@@ -12,7 +12,7 @@ import { corsOptions } from "../config/corsOptions";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "../config/swagger.config"
 import { ENV } from "../config/env.config";
-import "../api/auth/events/forgotPassword.event"
+import "../api/auth/event-handlers/forgotPassword.event"
 import axios, {AxiosResponse} from "axios";
 config();
 

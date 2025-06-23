@@ -113,6 +113,8 @@ router.post("/sign-in", validate(SignInSchema), async (req: Request, res: Respon
 });
 
 
+// router.post("/verify-email")
+
 /**
  * @swagger
  * /api/v1/auth/forgot-password:

@@ -1,8 +1,9 @@
 import Mail from "nodemailer/lib/mailer";
 import { ENV } from "../config/env.config";
-import { ForgotPasswordEventPayload } from "../events/event-payload-types/forgot-password.events";
+import { ForgotPasswordEventPayload } from "../api/auth/events/forgot-password.events";
 import nodemailer from "nodemailer"
 import SMTPPool from "nodemailer/lib/smtp-pool";
+import { UserRegisteredEventPayload } from "../api/auth/events/user-registed.event";
 
 export async function sendPasswordResetTokenMail(payload: ForgotPasswordEventPayload) {
     const subject = "Password reset token";
@@ -12,6 +13,13 @@ export async function sendPasswordResetTokenMail(payload: ForgotPasswordEventPay
     await sendMail(message, recipient, subject)
 }
 
+
+export async function sendVerificationMail(payload: UserRegisteredEventPayload)  {
+    const subject = "User verification";
+    const recipient = payload.email;
+    const message = `Welcome to oniko! This is the token to verify you email:  </br> <b>${payload.token}</b> </br> This token expires in 15 minutes`    
+    await sendMail(message, recipient, subject)
+}
 
 async function sendMail(message: string, recipient: string, subject: string) {
     const transportOptions: SMTPPool.Options = {

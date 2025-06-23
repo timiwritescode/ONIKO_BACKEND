@@ -39,7 +39,7 @@ export async function createUser(userDto: Partial<IUser>): Promise<Partial<IUser
 
 
 
-export async function getUserByEmail(email: string): Promise<Partial<IUser>> {
+export async function getUserByEmail(email: string): Promise<IUser> {
         const user = await userModel.findOne({
             email:email
         });

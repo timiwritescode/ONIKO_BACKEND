@@ -17,8 +17,11 @@ import { createOTP } from "../util/util";
 import passwordResetTokenModel from "../../../models/passwordResetToken.model";
 import mongoose, { Types } from "mongoose";
 import { eventDispatch } from "../../../events/eventDispatcher.util";
-import { ForgotPasswordEventPayload } from "../../../events/event-payload-types/forgot-password.events";
+import { ForgotPasswordEventPayload } from "../events/forgot-password.events";
 import { ResetPasswordDto } from "../dto/reset-password.dto";
+import { IUser } from "../../../interface/user.interface";
+import { IPasswordResetTokens } from "../../../interface/passwordResetTokens.interface";
+import { UserRegisteredEventPayload } from "../events/user-registed.event";
 
 
 export async function signUpUser(dto: SignUpDto): Promise<GeneralResponse> {
@@ -27,8 +30,14 @@ export async function signUpUser(dto: SignUpDto): Promise<GeneralResponse> {
         dto["passwordHash"] = await hashPassword(dto.password);
         const user = await createUser(dto);
         
-        // dispatch event to 
-        
+        // dispatch event to send verification
+        const token = await createToken(user);
+        const payload: UserRegisteredEventPayload = {
+            email: user.email,
+            token: token.token.toString()
+        }
+
+        eventDispatch.emit("auth:user-registered", payload);
 
         return new GeneralResponse(
             true, 
@@ -47,6 +56,16 @@ export async function signUpUser(dto: SignUpDto): Promise<GeneralResponse> {
 }
 
 
+async function createToken(user: Partial<IUser>): Promise<IPasswordResetTokens>{
+    const token = createOTP(6);
+    const tokenInDb = await passwordResetTokenModel.create({
+        token: token,
+        usr: user.email
+    })
+
+    return tokenInDb
+
+}
 
 export async function signInUser(dto: SignInDto): Promise<SignInResponseDto>{
     try {
@@ -82,18 +101,11 @@ export async function forgotPassword(dto: ForgotPasswordDto): Promise<GeneralRes
 
         if (userInDb) {
                     // create new otp for user
-                    console.log("Inside here")
-            const token = createOTP(6);
-            // hash the token and only store the hash
-            // save the OTP to db
-            const tokenInDb = await passwordResetTokenModel.create({
-            token: token,
-            user: userInDb._id
-        })
-        
+        const token = await createToken(userInDb);
         // emit forgot password event
+
         const eventPayload: ForgotPasswordEventPayload = {
-            token: token.toString(),
+            token: token.token.toString(),
             email: userInDb.email
 
         }
