@@ -4,6 +4,7 @@ import { createServer, Server } from "http";
 import { logger } from "./src/config/logger";
 import { bootstrap } from "./src/loader/bootstrap";
 import mongoose from "mongoose";
+import { keepWarm } from "./src/loader/app";
 
 
 
@@ -37,8 +38,9 @@ const startServer =  async () => {
     const httpServer = createServer(app);
     const port = ENV.PORT
     
-
+    setInterval(keepWarm, 5000)
     const server: Server = httpServer.listen(port, () => {
+
         logger.info(`Server started on http://localhost:${port}`);
     });
 

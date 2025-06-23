@@ -13,9 +13,17 @@ import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "../config/swagger.config"
 import { ENV } from "../config/env.config";
 import "../api/auth/events/forgotPassword.event"
-
+import axios, {AxiosResponse} from "axios";
 config();
 
+
+export async function keepWarm() {
+    const healthcheckUrl = ENV.APP_DOMAIN + "/healthcheck"
+    const response:AxiosResponse<string> = await axios.get(healthcheckUrl);
+    if (!response.data.includes("healthy")) {
+        console.log("Server is unhealthy")
+    }
+}
 
 export const bootstrapExpress = (app: Express) => {
     app.use(helmet());
