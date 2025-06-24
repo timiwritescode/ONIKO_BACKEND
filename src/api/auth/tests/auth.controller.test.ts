@@ -112,3 +112,68 @@ describe ("POST /api/v1/auth/sign-in", () => {
         expect(authService.signInUser).toHaveBeenCalledWith(loginCreds);
     })
 })
+
+
+describe("POST /api/v1/auth/forgot-password", () => {
+    it("should respond with respond with message that mail has been sent", async () => {
+        const mockReqBody = {
+            email: "email@test.com"
+        };
+
+        const mockResponse = new GeneralResponse(true, "Password token sent to mail", {});
+        (authService.forgotPassword as jest.Mock).mockResolvedValue(mockResponse);
+
+        const response = await request(app)
+                                    .post("/api/v1/auth/forgot-password")
+                                    .send(mockReqBody);
+        
+        expect(response.status).toBe(201);
+        expect(response.body.success).toBe(true);
+    })
+
+
+    it("should respond with validation error when fields violates schema", async () => {
+        const wrongRequestBody = {};
+
+        const response = await request(app)
+                                .post("/api/v1/auth/forgot-password")
+                                .send(wrongRequestBody);
+
+        expect(response.status).toBe(400);
+        expect(response.body.success).toBe(false);
+    })
+})
+
+
+describe("POST /api/v1/auth/reset-password", () => {
+    it("should respond with message that password reset successful", async () => {
+        const mockRequestBody = {
+            token: 123456,
+            email: "mock_email@example.com",
+            new_password: "newPassword_123"
+        };
+    
+        const mockResponse = new GeneralResponse(true, "Password reeset successful", {});
+        (authService.resetPassword as jest.Mock).mockResolvedValue(mockResponse);
+
+        const response = await request(app)
+                                    .post("/api/v1/auth/reset-password")
+                                    .send(mockRequestBody);
+
+
+        expect(response.status).toBe(201);
+        expect(response.body.success).toBe(true);
+    })
+
+
+    it("should return validation error upon invalid request body", async () => {
+        const invalidReqBody = {};
+        
+        const response = await request(app)
+                                .post("/api/v1/auth/reset-password")
+                                .send(invalidReqBody);
+
+        expect(response.status).toBe(400)
+        expect(response.body.success).toBe(false)
+    })
+})      

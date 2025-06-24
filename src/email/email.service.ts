@@ -3,7 +3,7 @@ import { ENV } from "../config/env.config";
 import { ForgotPasswordEventPayload } from "../api/auth/events/forgot-password.events";
 import nodemailer from "nodemailer"
 import SMTPPool from "nodemailer/lib/smtp-pool";
-import { UserRegisteredEventPayload } from "../api/auth/events/user-registed.event";
+import { UserRequestVerificationEventPayload } from "../api/auth/events/user-registed.event";
 
 export async function sendPasswordResetTokenMail(payload: ForgotPasswordEventPayload) {
     const subject = "Password reset token";
@@ -14,22 +14,25 @@ export async function sendPasswordResetTokenMail(payload: ForgotPasswordEventPay
 }
 
 
-export async function sendVerificationMail(payload: UserRegisteredEventPayload)  {
+export async function sendVerificationMail(payload: UserRequestVerificationEventPayload)  {
     const subject = "User verification";
     const recipient = payload.email;
-    const message = `Welcome to oniko! This is the token to verify you email:  </br> <b>${payload.token}</b> </br> This token expires in 15 minutes`    
+    const message = `Welcome to oniko! This is the token to verify your email:  </br> <b>${payload.token}</b> </br> This token expires in 15 minutes`    
     await sendMail(message, recipient, subject)
 }
 
 async function sendMail(message: string, recipient: string, subject: string) {
-    const transportOptions: SMTPPool.Options = {
-        host: ENV.MAIL_HOST,
-        port: +ENV.MAIL_PORT,
-        pool: true,
+    const transportOptions = {
+        // host: ENV.MAIL_HOST,
+        // port: +ENV.MAIL_PORT,
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
         auth: {
             user: ENV.ORG_MAIL,
             pass: ENV.MAIL_PASSWORD
         }
+        
     }
     const transporter = nodemailer.createTransport(transportOptions)
 
@@ -37,7 +40,7 @@ async function sendMail(message: string, recipient: string, subject: string) {
         from: ENV.ORG_MAIL,
         to: recipient,
         subject,
-        html: message
+        html: message 
     }
 
     await transporter.sendMail(mailOptions);

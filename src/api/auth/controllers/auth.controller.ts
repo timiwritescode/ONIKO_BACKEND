@@ -1,10 +1,12 @@
 import express, { NextFunction, Request, Response } from "express";
 import { validate } from "../../../validation/validate";
 import { SignUpSchema } from "../dto/signUp.dto";
-import { forgotPassword, resetPassword, signInUser, signUpUser } from "../service/auth.service";
+import { forgotPassword, requestEmailVerification, resetPassword, signInUser, signUpUser, verifyEmail } from "../service/auth.service";
 import { SignInSchema } from "../dto/signIn.dto";
 import { ForgotPasswordSchema } from "../dto/forgotPassword.dto";
 import { ResetPasswordSchema } from "../dto/reset-password.dto";
+import { RequestVerificationSchema } from "../dto/request-verification.dto";
+import { EmailVerificationSchema } from "../dto/emailVerification.dto";
 
 const router = express.Router();
 
@@ -109,11 +111,111 @@ router.post("/sign-up", validate(SignUpSchema), async (req: Request, res: Respon
  */
 router.post("/sign-in", validate(SignInSchema), async (req: Request, res: Response) => {
   const response = await signInUser(req.body);
-  res.status(200).json(response);
+  res.status(201).json(response);
 });
 
+/**
+ * @swagger
+ * /api/v1/auth/request-email-verification:
+ *   post:
+ *     summary: Request password reset
+ *     description: Sends a password reset link to the user's email address.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *                 description: The email address associated with the user account.
+ *     responses:
+ *       200:
+ *         description: Email verification link sent successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: token sent to your mail.
+ *       400:
+ *         description: Validation error (e.g., invalid or missing email).
+ *       404:
+ *         description: User with the provided email was not found.
+ */
+router.post("/request-email-verification", validate(RequestVerificationSchema), async(req: Request, res: Response) => {
+   const response = await requestEmailVerification(req.body);
+   res.status(201).json(response);
+})
 
-// router.post("/verify-email")
+
+/**
+ * @swagger
+ * /api/v1/auth/verify-email:
+ *   patch:
+ *     summary: Verify user's email address
+ *     description: Verifies the user's email using a verification token.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - token
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *               token:
+ *                 type: number
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: Email verified successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Email verified successfully."
+ *                 data:
+ *                   type: object
+ *                   example: {}
+ *       400:
+ *         description: Invalid request data
+ *       401:
+ *         description: Invalid or expired token
+ *       404:
+ *         description: User not found
+ */
+
+router.patch("/verify-email", validate(EmailVerificationSchema), async (req: Request, res: Response) => {
+  const response = await verifyEmail(req.body);
+  res.status(200).json(response)
+})
+
 
 /**
  * @swagger
@@ -219,5 +321,5 @@ router.post("/reset-password", validate(ResetPasswordSchema), async (req: Reques
   res.status(201).json(response);
 })
 
-export default router;
+export default router;  
 

@@ -1,0 +1,10 @@
+import { z } from "zod";
+
+export const RequestVerificationSchema = z.object({
+        email: z.string({required_error: "Email is required"})
+        .email("Invalid email")
+        .min(1, "Email cannot be empty"),
+})
+
+
+export type RequestVerificationDto = z.infer<typeof RequestVerificationSchema>
